@@ -150,7 +150,7 @@ Module.register('MMM-Anycubic', {
       projectProgressEl.appendChild(clockSymbolEl);
 
       const projectRemainingTimeEl = document.createElement('span');
-      projectRemainingTimeEl.innerHTML = `${this.viewModel.project.remainingTime} minutes`;
+      projectRemainingTimeEl.innerHTML = `${this.viewModel.project.remainingTime} mins`;
       projectProgressEl.appendChild(projectRemainingTimeEl);
 
       const progressSymbolEl = document.createElement('span');
