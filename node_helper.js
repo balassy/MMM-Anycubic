@@ -1,8 +1,7 @@
-const NodeHelper = require('node_helper'); // eslint-disable-line import/no-unresolved
-const request = require('request'); // eslint-disable-line import/no-extraneous-dependencies
 const crypto = require('crypto');
+const request = require('request'); // eslint-disable-line import/no-extraneous-dependencies
 const uuidv1 = require('uuid').v1;
-
+const NodeHelper = require('node_helper'); // eslint-disable-line import/no-unresolved
 
 // Source: https://github.com/WaresWichall/hass-anycubic_cloud/blob/master/custom_components/anycubic_cloud/anycubic_cloud_api/const/const.py#L27
 const APP_ID = 'f9b3528877c94d5c9c5af32245db46ef';
@@ -14,18 +13,7 @@ const API_BASE_URL = 'https://cloud-universe.anycubic.com/p/p/workbench/api/';
 const API_URLS = {
   GET_PRINTERS: 'work/printer/getPrinters',
   GET_PROJECTS: '/work/project/getProjects',
-  GET_USER_INFO: 'user/profile/userInfo',
-};
-
-// Source: https://github.com/WaresWichall/hass-anycubic_cloud/blob/master/custom_components/anycubic_cloud/anycubic_cloud_api/const/enums.py#L10
-const PRINT_STATUS = {
-    Printing: 1,
-    Complete: 2,
-    Cancelled: 3,
-    Downloading: 4,
-    Checking: 5,
-    Preheating: 6,
-    Slicing: 7
+  GET_USER_INFO: 'user/profile/userInfo'
 };
 
 module.exports = NodeHelper.create({
@@ -50,35 +38,38 @@ module.exports = NodeHelper.create({
 
     // Get the data immediately right after the module initialization has completed.
     setTimeout(() => {
-      self._getData(moduleId, config);
+      self._sendRequests(moduleId, config);
     }, 0);
 
     setInterval(() => {
-      self._getData(moduleId, config);
+      self._sendRequests(moduleId, config);
     }, config.updateInterval);
   },
 
-  _getData(moduleId, config) {
+  _sendRequests(moduleId, config) {
+    this._getData(API_URLS.GET_PRINTERS, moduleId, config, 'MMM-ANYCUBIC.PRINTER_VALUE_RECEIVED');
+    this._getData(`${API_URLS.GET_PROJECTS}?limit=1`, moduleId, config, 'MMM-ANYCUBIC.PROJECT_VALUE_RECEIVED');
+  },
+
+  _getData(url, moduleId, config, notificationName) {
     const self = this;
 
-    const url = API_BASE_URL + API_URLS.GET_PRINTERS;
-
     const options = {
-      url: url,
+      url: API_BASE_URL + url,
       headers: self._buildRequestHeaders(config),
-      method: 'GET',
+      method: 'GET'
     };
 
     request(options, (error, response, body) => {
       if (!error && response.statusCode === 200) {
-        self._processResponse(moduleId, body);
+        self._processResponse(moduleId, body, notificationName);
       } else {
         console.error(`MMM-Anycubic Node helper: Failed to load data in the background. Error: ${error}. Status code: ${response.statusCode}. Body: ${body}`); // eslint-disable-line no-console
       }
     });
   },
 
-  _processResponse(moduleId, responseBody) {
+  _processResponse(moduleId, responseBody, notificationName) {
     const response = JSON.parse(responseBody);
     const payload = {
 
@@ -86,13 +77,11 @@ module.exports = NodeHelper.create({
       moduleId: moduleId,
       data: response.data[0]
     };
-    this.sendSocketNotification('MMM-ANYCUBIC.VALUE_RECEIVED', payload);
+    this.sendSocketNotification(notificationName, payload);
   },
 
-
-
-    // Source: https://github.com/WaresWichall/hass-anycubic_cloud/blob/master/custom_components/anycubic_cloud/anycubic_cloud_api/models/auth.py#L257
-  _buildRequestHeaders(config){
+  // Source: https://github.com/WaresWichall/hass-anycubic_cloud/blob/master/custom_components/anycubic_cloud/anycubic_cloud_api/models/auth.py#L257
+  _buildRequestHeaders(config) {
     const nonce = uuidv1();
     const timestamp = Date.now().toString();
 
@@ -104,9 +93,9 @@ module.exports = NodeHelper.create({
       'Xx-Signature': this._generateSignature(timestamp, nonce),
       'Xx-Timestamp': timestamp,
       'Xx-Version': '1.0.0',
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-    }
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    };
   },
 
   _generateSignature(timestamp, nonce) {

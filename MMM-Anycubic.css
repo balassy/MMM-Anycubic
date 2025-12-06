@@ -1,12 +1,20 @@
 /* The naming convention is to include the name of the module. */ 
 /* stylelint-disable selector-class-pattern */
-.MMM-Anycubic table {
-  width: auto !important;
+.MMM-Anycubic .left-column {
+  display: inline-block;
+  vertical-align: top;
+  width: 100px;
+}
+
+.MMM-Anycubic .right-column {
+  display: inline-block;
+  vertical-align: top;
+  margin-left: 10px;
 }
 
 .MMM-Anycubic .photo {
-  max-width: 200px;
-  max-height: 200px;
+  max-width: 100px;
+  max-height: 100px;
   display: block;
 }
 
@@ -14,18 +22,11 @@
   margin-right: 10px;
 }
 
-.MMM-Anycubic .temp {
-  margin-right: 30px;
+.MMM-Anycubic .symbol-second {
+  margin-left: 30px;
 }
 
-.MMM-Anycubic .left-column {
-  display: inline-block;
-  vertical-align: top;
-}
-
-.MMM-Anycubic .right-column {
-  display: inline-block;
-  vertical-align: top;
-  margin-left: 20px;
+.MMM-Anycubic .project-row {
+  margin-top: 20px;
 }
 /* stylelint-enable selector-class-pattern */
