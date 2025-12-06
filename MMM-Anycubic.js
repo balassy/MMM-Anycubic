@@ -94,7 +94,7 @@ Module.register('MMM-Anycubic', {
       printerRowRightColumnEl.appendChild(printerStatusEl);
 
       const tempsEl = document.createElement('div');
-      tempsEl.classList = 'small';
+      tempsEl.classList = 'small dimmed';
       printerRowRightColumnEl.appendChild(tempsEl);
 
       const hotbedSymbolEl = document.createElement('span');
@@ -142,7 +142,7 @@ Module.register('MMM-Anycubic', {
       projectRowRightColumnEl.appendChild(projectStatusEl);
 
       const projectProgressEl = document.createElement('div');
-      projectProgressEl.classList = 'small';
+      projectProgressEl.classList = 'small dimmed';
       projectRowRightColumnEl.appendChild(projectProgressEl);
 
       const clockSymbolEl = document.createElement('span');
