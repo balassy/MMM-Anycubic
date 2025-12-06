@@ -85,11 +85,12 @@ Module.register('MMM-Anycubic', {
 
       const printerNameEl = document.createElement('div');
       printerNameEl.innerHTML = this.viewModel.printer.name;
+      printerNameEl.classList = 'small';
       printerRowRightColumnEl.appendChild(printerNameEl);
 
       const printerStatusEl = document.createElement('div');
       printerStatusEl.innerHTML = this.viewModel.printer.statusName;
-      printerStatusEl.classList = 'bright small';
+      printerStatusEl.classList = 'bright small light';
       printerRowRightColumnEl.appendChild(printerStatusEl);
 
       const tempsEl = document.createElement('div');
@@ -132,12 +133,12 @@ Module.register('MMM-Anycubic', {
 
       const projectNameEl = document.createElement('div');
       projectNameEl.innerHTML = this.viewModel.project.name;
-      projectNameEl.classList = 'medium light';
+      projectNameEl.classList = 'small light';
       projectRowRightColumnEl.appendChild(projectNameEl);
 
       const projectStatusEl = document.createElement('div');
       projectStatusEl.innerHTML = this.viewModel.project.printStatusName;
-      projectStatusEl.classList = 'bright small';
+      projectStatusEl.classList = 'bright small light';
       projectRowRightColumnEl.appendChild(projectStatusEl);
 
       const projectProgressEl = document.createElement('div');
