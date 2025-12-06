@@ -38,4 +38,12 @@
 .MMM-Anycubic .project-row {
   margin-top: 20px;
 }
+
+.MMM-Anycubic .timestamp-row {
+  margin-top: 10px;
+}
+
+.MMM-Anycubic .timestamp-row .symbol {
+  font-size: 13px;
+}
 /* stylelint-enable selector-class-pattern */

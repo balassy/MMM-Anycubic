@@ -160,6 +160,17 @@ Module.register('MMM-Anycubic', {
       const projectProgressPercentEl = document.createElement('span');
       projectProgressPercentEl.innerHTML = `${this.viewModel.project.progress}%`;
       projectProgressEl.appendChild(projectProgressPercentEl);
+
+      const timestampRowEl = document.createElement('div');
+      timestampRowEl.classList = 'timestamp-row dimmed xsmall';
+      projectRowRightColumnEl.appendChild(timestampRowEl);
+
+      const timestampIconEl = document.createElement('span');
+      timestampIconEl.classList = 'symbol fa fa-refresh';
+      timestampRowEl.appendChild(timestampIconEl);
+
+      const timestampEl = document.createTextNode(this._formatTimestamp(this.viewModel.timestamp));
+      timestampRowEl.appendChild(timestampEl);
     } else {
       const loadingEl = this._getDomForLoading();
       wrapper.appendChild(loadingEl);
@@ -207,6 +218,8 @@ Module.register('MMM-Anycubic', {
       };
     }
 
+    this.viewModel.timestamp = Date.now();
+
     if (!this.hasData) {
       this.updateDom();
     }
@@ -221,5 +234,9 @@ Module.register('MMM-Anycubic', {
 
   _getPrintStatusName(value) {
     return Object.keys(PRINT_STATUS).find((k) => PRINT_STATUS[k] === value);
+  },
+
+  _formatTimestamp(timestamp) {
+    return moment(timestamp).format('HH:mm');
   }
 });
