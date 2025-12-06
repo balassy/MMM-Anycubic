@@ -52,10 +52,49 @@ Module.register('MMM-Anycubic', {
     const wrapper = document.createElement('div');
 
     if (this.viewModel) {
-      // TODO
-      const el = document.createElement('div');
-      el.innerHTML = this.viewModel.name;
-      wrapper.appendChild(el);
+      const leftColumnEl = document.createElement('div');
+      leftColumnEl.classList = 'left-column';
+      wrapper.appendChild(leftColumnEl);
+
+      const photoEl = document.createElement('img');
+      photoEl.src = this.viewModel.imageUrl;
+      photoEl.classList = 'photo';
+      leftColumnEl.appendChild(photoEl);
+
+
+      const rightColumnEl = document.createElement('div');
+      rightColumnEl.classList = 'right-column';
+      wrapper.appendChild(rightColumnEl); 
+
+      const printerNameEl = document.createElement('div');
+      printerNameEl.innerHTML = this.viewModel.name;
+      rightColumnEl.appendChild(printerNameEl);
+
+      const printerStatusEl = document.createElement('div');
+      printerStatusEl.innerHTML = this.viewModel.statusName;
+      printerStatusEl.classList = 'bright small';
+      rightColumnEl.appendChild(printerStatusEl);
+
+      const tempsEl = document.createElement('div');
+      tempsEl.classList = 'small';
+      rightColumnEl.appendChild(tempsEl);
+
+      const hotbedSymbolEl = document.createElement('span');
+      hotbedSymbolEl.classList = 'symbol xsmall fa fa-square-o';
+      tempsEl.appendChild(hotbedSymbolEl);
+
+      const hotbedTempEl = document.createElement('span');
+      hotbedTempEl.innerHTML = `${this.viewModel.hotbedTemp} °C`;
+      hotbedTempEl.classList = 'temp';
+      tempsEl.appendChild(hotbedTempEl);
+
+      const nozzleSymbolEl = document.createElement('span');
+      nozzleSymbolEl.classList = 'symbol fa fa-caret-down';
+      tempsEl.appendChild(nozzleSymbolEl);
+
+      const nozzleTempEl = document.createElement('span');
+      nozzleTempEl.innerHTML = `${this.viewModel.nozzleTemp} °C`;
+      tempsEl.appendChild(nozzleTempEl);
     } else {
       const loadingEl = this._getDomForLoading();
       wrapper.appendChild(loadingEl);
@@ -82,8 +121,14 @@ Module.register('MMM-Anycubic', {
   },
 
   _processResponseJson(response) {
+    console.log(response);
     this.viewModel = {
-      name: response[0].employee.name
+      name: response.name,
+      imageUrl: response.img,
+      statusCode: response.device_status,
+      statusName: this._capitalizeFirstLetter(response.reason),
+      hotbedTemp: response.parameter.curr_hotbed_temp,
+      nozzleTemp: response.parameter.curr_nozzle_temp,
     };
 
     if (!this.hasData) {
@@ -91,5 +136,10 @@ Module.register('MMM-Anycubic', {
     }
 
     this.hasData = true;
-  }
+  },
+
+  _capitalizeFirstLetter(str) {
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }  
 });

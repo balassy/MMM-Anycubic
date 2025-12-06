@@ -4,4 +4,28 @@
   width: auto !important;
 }
 
+.MMM-Anycubic .photo {
+  max-width: 200px;
+  max-height: 200px;
+  display: block;
+}
+
+.MMM-Anycubic .symbol {
+  margin-right: 10px;
+}
+
+.MMM-Anycubic .temp {
+  margin-right: 30px;
+}
+
+.MMM-Anycubic .left-column {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.MMM-Anycubic .right-column {
+  display: inline-block;
+  vertical-align: top;
+  margin-left: 20px;
+}
 /* stylelint-enable selector-class-pattern */
