@@ -76,7 +76,7 @@ Module.register('MMM-Anycubic', {
 
       const photoEl = document.createElement('img');
       photoEl.src = this.viewModel.printer.imageUrl;
-      photoEl.classList = 'photo';
+      photoEl.classList = 'photo printer-photo';
       printerRowLeftColumnEl.appendChild(photoEl);
 
       const printerRowRightColumnEl = document.createElement('div');

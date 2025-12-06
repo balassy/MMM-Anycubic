@@ -1,5 +1,9 @@
 /* The naming convention is to include the name of the module. */ 
 /* stylelint-disable selector-class-pattern */
+.MMM-Anycubic {
+  text-align: left;
+}
+
 .MMM-Anycubic .left-column {
   display: inline-block;
   vertical-align: top;
@@ -16,6 +20,11 @@
   max-width: 100px;
   max-height: 100px;
   display: block;
+
+}
+
+.MMM-Anycubic .printer-photo {
+  margin-top: 12px;
 }
 
 .MMM-Anycubic .symbol {
