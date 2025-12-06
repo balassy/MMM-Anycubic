@@ -1,0 +1,7 @@
+/* The naming convention is to include the name of the module. */ 
+/* stylelint-disable selector-class-pattern */
+.MMM-Anycubic table {
+  width: auto !important;
+}
+
+/* stylelint-enable selector-class-pattern */

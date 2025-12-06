@@ -1,0 +1,36 @@
+{
+  "name": "mmm-anycubic",
+  "version": "1.0.0",
+  "description": "MagicMirror module to display the status of an Anycubic 3D printer through their cloud service.",
+  "main": "MMM-Anycubic.js",
+  "author": "György Balássy",
+  "license": "MIT",
+  "scripts": {
+    "lint": "npm run jsonlint & npm run eslint & npm run markdownlint & npm run stylelint",
+    "eslint": "eslint *.js",
+    "jsonlint": "jsonlint --quiet --comments **/*.json !**/node_modules",
+    "markdownlint": "markdownlint *.md",
+    "stylelint": "stylelint *.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/balassy/MMM-Anycubic"
+  },
+  "keywords": [
+    "MagicMirror",
+    "module",
+    "Anycubic",
+    "3D printer",
+    "3D printing",
+    "Kobra"
+  ],
+  "devDependencies": {
+    "@prantlf/jsonlint": "^16.0.0",
+    "eslint": "^8.57.1",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.32.0",
+    "markdownlint-cli": "^0.46.0",
+    "stylelint": "^16.26.1",
+    "stylelint-config-standard": "^39.0.1"
+  }
+}
