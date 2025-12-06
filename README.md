@@ -4,7 +4,7 @@ This is a module for the [MagicMirror²](https://github.com/MichMich/MagicMirror
 
 ## Features
 
-This module displays the status and temperatures of the logged-in user's first printer, and the last (or current) print jobs status, progress and remaining time.
+This module displays the status and temperatures of the logged-in user's first printer, and the last (or current) print jobs status, progress and remaining time. (Yes, I know it's limited and not configurable at the moment.)
 
 > **IMPORTANT!** The REST API of Anycubic Cloud is not documented and not opened to 3rd-party applications. This module mimics some functionality of the webpage and the client applications, but it can break any time.
 
@@ -107,7 +107,9 @@ These files provided the most useful information:
 - [Enums](https://github.com/WaresWichall/hass-anycubic_cloud/blob/master/custom_components/anycubic_cloud/anycubic_cloud_api/const/enums.py)
 - [Authentication headers](https://github.com/WaresWichall/hass-anycubic_cloud/blob/master/custom_components/anycubic_cloud/anycubic_cloud_api/models/auth.py#L257)
 
-Thank you [WaresWichall](https://github.com/WaresWichall) for creating that project with open source! 
+The [Anycubic Cloud API by Royrdan](https://github.com/Royrdan/anycubic_cloud) is also a great source to learn about the API.
+
+Thank you [WaresWichall](https://github.com/WaresWichall) and [Royrdan](https://github.com/Royrdan) for creating these projects with open source! 
 
 ## Got feedback?
 
