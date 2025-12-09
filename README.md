@@ -42,7 +42,7 @@ var config = {
       position: 'top_left',
       config: {
         authToken: 'TODO_ADD_YOUR_AUTHENTICATION_TOKEN',
-        updateInterval: 5000
+        updateInterval: 15000
       }
     }
   ]
@@ -61,7 +61,7 @@ This is required because newer versions of MagicMirror do not include this modul
 
 | Option                       | Description
 |------------------------------|-----------
-| `authToken`                     | **REQUIRED** The authentication token of the logged-in user. Read more in the next section. <br><br> **Type:** `string` <br>**Default value:** `TODO_TOKEN`
+| `authToken`                  | **REQUIRED** The authentication token of the logged-in user. Read more in the next section. <br><br> **Type:** `string` <br>**Default value:** `TODO_TOKEN`
 | `updateInterval`             | *Optional* The frequency of when the module should query the status from the Anycubic Cloud service. <br><br>**Type:** `int` (milliseconds) <br>**Default value:** `15000` milliseconds (15 seconds)
 
 ## How to obtain the `authToken`
