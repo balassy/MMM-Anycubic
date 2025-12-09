@@ -5,7 +5,7 @@
  * MIT Licensed.  */
 
 // Source: https://github.com/WaresWichall/hass-anycubic_cloud/blob/master/custom_components/anycubic_cloud/anycubic_cloud_api/const/enums.py#L10
-const PRINT_STATUS = {
+const PROJECT_PRINT_STATUS = {
   Printing: 1,
   Complete: 2,
   Cancelled: 3,
@@ -13,6 +13,10 @@ const PRINT_STATUS = {
   Checking: 5,
   Preheating: 6,
   Slicing: 7
+};
+
+const PRINTER_DEVICE_STATUS = {
+  Offline: 2
 };
 
 Module.register('MMM-Anycubic', {
@@ -93,25 +97,28 @@ Module.register('MMM-Anycubic', {
       printerStatusEl.classList = 'bright small light';
       printerRowRightColumnEl.appendChild(printerStatusEl);
 
-      const tempsEl = document.createElement('div');
-      tempsEl.classList = 'small dimmed';
-      printerRowRightColumnEl.appendChild(tempsEl);
+      // Show temps only if the printer is online.
+      if (this.viewModel.printer.isOnline) {
+        const tempsEl = document.createElement('div');
+        tempsEl.classList = 'small dimmed';
+        printerRowRightColumnEl.appendChild(tempsEl);
 
-      const hotbedSymbolEl = document.createElement('span');
-      hotbedSymbolEl.classList = 'symbol xsmall fa fa-object-group';
-      tempsEl.appendChild(hotbedSymbolEl);
+        const hotbedSymbolEl = document.createElement('span');
+        hotbedSymbolEl.classList = 'symbol xsmall fa fa-object-group';
+        tempsEl.appendChild(hotbedSymbolEl);
 
-      const hotbedTempEl = document.createElement('span');
-      hotbedTempEl.innerHTML = `${this.viewModel.printer.hotbedTemp} °C`;
-      tempsEl.appendChild(hotbedTempEl);
+        const hotbedTempEl = document.createElement('span');
+        hotbedTempEl.innerHTML = `${this.viewModel.printer.hotbedTemp} °C`;
+        tempsEl.appendChild(hotbedTempEl);
 
-      const nozzleSymbolEl = document.createElement('span');
-      nozzleSymbolEl.classList = 'symbol symbol-second xsmall fa fa-get-pocket';
-      tempsEl.appendChild(nozzleSymbolEl);
+        const nozzleSymbolEl = document.createElement('span');
+        nozzleSymbolEl.classList = 'symbol symbol-second xsmall fa fa-get-pocket';
+        tempsEl.appendChild(nozzleSymbolEl);
 
-      const nozzleTempEl = document.createElement('span');
-      nozzleTempEl.innerHTML = `${this.viewModel.printer.nozzleTemp} °C`;
-      tempsEl.appendChild(nozzleTempEl);
+        const nozzleTempEl = document.createElement('span');
+        nozzleTempEl.innerHTML = `${this.viewModel.printer.nozzleTemp} °C`;
+        tempsEl.appendChild(nozzleTempEl);
+      }
 
       // Project row.
       const projectRowEl = document.createElement('div');
@@ -141,26 +148,30 @@ Module.register('MMM-Anycubic', {
       projectStatusEl.classList = 'bright small light';
       projectRowRightColumnEl.appendChild(projectStatusEl);
 
-      const projectProgressEl = document.createElement('div');
-      projectProgressEl.classList = 'small dimmed';
-      projectRowRightColumnEl.appendChild(projectProgressEl);
+      // Show progress only if the project is not finished.
+      if (!this.viewModel.project.isFinished) {
+        const projectProgressEl = document.createElement('div');
+        projectProgressEl.classList = 'small dimmed';
+        projectRowRightColumnEl.appendChild(projectProgressEl);
 
-      const clockSymbolEl = document.createElement('span');
-      clockSymbolEl.classList = 'symbol xsmall fa fa-clock-o';
-      projectProgressEl.appendChild(clockSymbolEl);
+        const clockSymbolEl = document.createElement('span');
+        clockSymbolEl.classList = 'symbol xsmall fa fa-clock-o';
+        projectProgressEl.appendChild(clockSymbolEl);
 
-      const projectRemainingTimeEl = document.createElement('span');
-      projectRemainingTimeEl.innerHTML = `${this.viewModel.project.remainingTime} mins`;
-      projectProgressEl.appendChild(projectRemainingTimeEl);
+        const projectRemainingTimeEl = document.createElement('span');
+        projectRemainingTimeEl.innerHTML = `${this.viewModel.project.remainingTime} mins`;
+        projectProgressEl.appendChild(projectRemainingTimeEl);
 
-      const progressSymbolEl = document.createElement('span');
-      progressSymbolEl.classList = 'symbol symbol-second xsmall fa fa-spinner';
-      projectProgressEl.appendChild(progressSymbolEl);
+        const progressSymbolEl = document.createElement('span');
+        progressSymbolEl.classList = 'symbol symbol-second xsmall fa fa-spinner';
+        projectProgressEl.appendChild(progressSymbolEl);
 
-      const projectProgressPercentEl = document.createElement('span');
-      projectProgressPercentEl.innerHTML = `${this.viewModel.project.progress}%`;
-      projectProgressEl.appendChild(projectProgressPercentEl);
+        const projectProgressPercentEl = document.createElement('span');
+        projectProgressPercentEl.innerHTML = `${this.viewModel.project.progress}%`;
+        projectProgressEl.appendChild(projectProgressPercentEl);
+      }
 
+      // Timestamp row showing the last refresh time.
       const timestampRowEl = document.createElement('div');
       timestampRowEl.classList = 'timestamp-row dimmed xsmall';
       projectRowRightColumnEl.appendChild(timestampRowEl);
@@ -169,7 +180,7 @@ Module.register('MMM-Anycubic', {
       timestampIconEl.classList = 'symbol fa fa-refresh';
       timestampRowEl.appendChild(timestampIconEl);
 
-      const timestampEl = document.createTextNode(this._formatTimestamp(this.viewModel.timestamp));
+      const timestampEl = document.createTextNode(this.viewModel.timestamp);
       timestampRowEl.appendChild(timestampEl);
     } else {
       const loadingEl = this._getDomForLoading();
@@ -204,21 +215,23 @@ Module.register('MMM-Anycubic', {
         statusCode: response.device_status,
         statusName: this._capitalizeFirstLetter(response.reason),
         hotbedTemp: response.parameter.curr_hotbed_temp,
-        nozzleTemp: response.parameter.curr_nozzle_temp
+        nozzleTemp: response.parameter.curr_nozzle_temp,
+        isOnline: response.device_status !== PRINTER_DEVICE_STATUS.Offline
       };
     }
 
     if (notificationName === 'MMM-ANYCUBIC.PROJECT_VALUE_RECEIVED') {
       this.viewModel.project = {
         name: response.gcode_name,
-        printStatusName: this._getPrintStatusName(response.print_status),
+        printStatusName: this._getProjectPrintStatusName(response.print_status),
         remainingTime: response.remain_time,
         progress: response.progress,
-        imageUrl: response.img
+        imageUrl: response.img,
+        isFinished: response.print_status === PROJECT_PRINT_STATUS.Complete || response.print_status === PROJECT_PRINT_STATUS.Cancelled
       };
     }
 
-    this.viewModel.timestamp = Date.now();
+    this.viewModel.timestamp = this._formatTimestamp(Date.now());
 
     if (!this.hasData) {
       this.updateDom();
@@ -232,8 +245,8 @@ Module.register('MMM-Anycubic', {
     return str.charAt(0).toUpperCase() + str.slice(1);
   },
 
-  _getPrintStatusName(value) {
-    return Object.keys(PRINT_STATUS).find((k) => PRINT_STATUS[k] === value);
+  _getProjectPrintStatusName(value) {
+    return Object.keys(PROJECT_PRINT_STATUS).find((k) => PROJECT_PRINT_STATUS[k] === value);
   },
 
   _formatTimestamp(timestamp) {
