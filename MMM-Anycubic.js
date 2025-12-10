@@ -11,18 +11,27 @@ const PROJECT_PRINT_STATUS = {
   Cancelled: 3,
   Downloading: 4,
   Checking: 5,
-  Preheating: 6,
-  Slicing: 7
+  Heating: 6,
+  Slicing: 7,
+  AutoLeveling: 9
 };
 
 const PRINTER_DEVICE_STATUS = {
+  Free: 1,
   Offline: 2
+};
+
+const PRINTER_STATUS_NAME = {
+  Free: 'Free',
+  Busy: 'Busy',
+  Offline: 'Offline'
 };
 
 Module.register('MMM-Anycubic', {
   defaults: {
     authToken: 'TODO_TOKEN',
-    updateInterval: 5000
+    updateInterval: 5000,
+    useColors: true
   },
 
   requiresVersion: '2.1.0',
@@ -95,6 +104,12 @@ Module.register('MMM-Anycubic', {
       const printerStatusEl = document.createElement('div');
       printerStatusEl.innerHTML = this.viewModel.printer.statusName;
       printerStatusEl.classList = 'bright small light';
+      if (this.config.useColors) {
+        const statusColor = this._getColorForPrinterStatusName(this.viewModel.printer.statusName);
+        if (statusColor) {
+          printerStatusEl.style.color = statusColor;
+        }
+      }
       printerRowRightColumnEl.appendChild(printerStatusEl);
 
       // Show temps only if the printer is online.
@@ -146,10 +161,16 @@ Module.register('MMM-Anycubic', {
       const projectStatusEl = document.createElement('div');
       projectStatusEl.innerHTML = this.viewModel.project.printStatusName;
       projectStatusEl.classList = 'bright small light';
+      if (this.config.useColors) {
+        const statusColor = this._getColorForProjectStatus(this.viewModel.project.printStatusCode);
+        if (statusColor) {
+          projectStatusEl.style.color = statusColor;
+        }
+      }
       projectRowRightColumnEl.appendChild(projectStatusEl);
 
-      // Show progress only if the project is not finished.
-      if (!this.viewModel.project.isFinished) {
+      // Show progress only if it is available.
+      if (this.viewModel.project.hasProgress) {
         const projectProgressEl = document.createElement('div');
         projectProgressEl.classList = 'small dimmed';
         projectRowRightColumnEl.appendChild(projectProgressEl);
@@ -223,11 +244,12 @@ Module.register('MMM-Anycubic', {
     if (notificationName === 'MMM-ANYCUBIC.PROJECT_VALUE_RECEIVED') {
       this.viewModel.project = {
         name: response.gcode_name,
+        printStatusCode: response.print_status,
         printStatusName: this._getProjectPrintStatusName(response.print_status),
         remainingTime: response.remain_time,
         progress: response.progress,
         imageUrl: response.img,
-        isFinished: response.print_status === PROJECT_PRINT_STATUS.Complete || response.print_status === PROJECT_PRINT_STATUS.Cancelled
+        hasProgress: response.print_status === PROJECT_PRINT_STATUS.Printing || response.print_status === PROJECT_PRINT_STATUS.Heating
       };
     }
 
@@ -251,5 +273,35 @@ Module.register('MMM-Anycubic', {
 
   _formatTimestamp(timestamp) {
     return moment(timestamp).format('HH:mm');
+  },
+
+  _getColorForPrinterStatusName(statusName) {
+    switch (statusName) {
+      case PRINTER_STATUS_NAME.Free:
+        return '#5cbc82'; // green-ish
+      case PRINTER_STATUS_NAME.Busy:
+        return '#ffcf42'; // yellow-ish
+      case PRINTER_STATUS_NAME.Offline:
+      default:
+        return null;
+    }
+  },
+
+  _getColorForProjectStatus(statusCode) {
+    switch (statusCode) {
+      case PROJECT_PRINT_STATUS.Printing:
+      case PROJECT_PRINT_STATUS.Downloading:
+      case PROJECT_PRINT_STATUS.Checking:
+      case PROJECT_PRINT_STATUS.Preheating:
+      case PROJECT_PRINT_STATUS.Slicing:
+      case PROJECT_PRINT_STATUS.AutoLeveling:
+        return '#ffcf42'; // yellow-ish
+      case PROJECT_PRINT_STATUS.Complete:
+        return '#5cbc82'; // green-ish
+      case PROJECT_PRINT_STATUS.Cancelled:
+        return '#d35400'; // red-ish
+      default:
+        return null;
+    }
   }
 });
