@@ -292,7 +292,7 @@ Module.register('MMM-Anycubic', {
       case PROJECT_PRINT_STATUS.Printing:
       case PROJECT_PRINT_STATUS.Downloading:
       case PROJECT_PRINT_STATUS.Checking:
-      case PROJECT_PRINT_STATUS.Preheating:
+      case PROJECT_PRINT_STATUS.Heating:
       case PROJECT_PRINT_STATUS.Slicing:
       case PROJECT_PRINT_STATUS.AutoLeveling:
         return '#ffcf42'; // yellow-ish
