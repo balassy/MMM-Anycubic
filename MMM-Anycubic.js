@@ -1,4 +1,4 @@
-/* global Module, moment, config */
+/* global Module, Log, moment, config */
 
 /* Magic Mirror Module: MMM-Anycubic (https://github.com/balassy/MMM-Anycubic)
  * By György Balássy (https://www.linkedin.com/in/balassy)
@@ -188,7 +188,10 @@ Module.register('MMM-Anycubic', {
         projectProgressEl.appendChild(progressSymbolEl);
 
         const projectProgressPercentEl = document.createElement('span');
-        projectProgressPercentEl.innerHTML = `${this.viewModel.project.progress}%`;
+        const layerInfo = this.viewModel.currentLayer && this.viewModel.project.totalLayers
+          ? `(${this.viewModel.project.currentLayer}/${this.viewModel.project.totalLayers})`
+          : '';
+        projectProgressPercentEl.innerHTML = `${this.viewModel.project.progress}% ${layerInfo}`;
         projectProgressEl.appendChild(projectProgressPercentEl);
       }
 
@@ -242,6 +245,7 @@ Module.register('MMM-Anycubic', {
     }
 
     if (notificationName === 'MMM-ANYCUBIC.PROJECT_VALUE_RECEIVED') {
+      const settings = this._getLayerInfoFromSettings(response.settings);
       this.viewModel.project = {
         name: response.gcode_name,
         printStatusCode: response.print_status,
@@ -249,6 +253,8 @@ Module.register('MMM-Anycubic', {
         remainingTime: response.remain_time,
         progress: response.progress,
         imageUrl: response.img,
+        currentLayer: settings.currentLayer,
+        totalLayers: settings.totalLayers,
         hasProgress: response.print_status === PROJECT_PRINT_STATUS.Printing || response.print_status === PROJECT_PRINT_STATUS.Heating
       };
     }
@@ -302,6 +308,23 @@ Module.register('MMM-Anycubic', {
         return '#d35400'; // red-ish
       default:
         return null;
+    }
+  },
+
+  _getLayerInfoFromSettings(settingsStr) {
+    if (!settingsStr) {
+      return {};
+    }
+
+    try {
+      const settingsJson = JSON.parse(settingsStr);
+      return {
+        currentLayer: settingsJson.curr_layer,
+        totalLayers: settingsJson.total_layers
+      };
+    } catch {
+      Log.error(this.name, 'MMM-Anycubic: Failed to parse settings JSON string:', settingsStr);
+      return {};
     }
   }
 });
