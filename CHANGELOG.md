@@ -3,6 +3,10 @@
 All notable changes to this project is documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.4.0]
+
+- Project status is shown only when the printer is online.
+
 ## [1.3.0]
 
 - Added current and total layer number to the project progress.

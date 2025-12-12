@@ -79,146 +79,164 @@ Module.register('MMM-Anycubic', {
     const wrapper = document.createElement('div');
 
     if (this.viewModel.printer.name && this.viewModel.project.name) {
-      // Printer row.
-      const printerRowEl = document.createElement('div');
-      wrapper.appendChild(printerRowEl);
+      this._writeDomForPrinterRow(wrapper);
 
-      const printerRowLeftColumnEl = document.createElement('div');
-      printerRowLeftColumnEl.classList = 'left-column';
-      printerRowEl.appendChild(printerRowLeftColumnEl);
-
-      const photoEl = document.createElement('img');
-      photoEl.src = this.viewModel.printer.imageUrl;
-      photoEl.classList = 'photo printer-photo';
-      printerRowLeftColumnEl.appendChild(photoEl);
-
-      const printerRowRightColumnEl = document.createElement('div');
-      printerRowRightColumnEl.classList = 'right-column';
-      printerRowEl.appendChild(printerRowRightColumnEl);
-
-      const printerNameEl = document.createElement('div');
-      printerNameEl.innerHTML = this.viewModel.printer.name;
-      printerNameEl.classList = 'small';
-      printerRowRightColumnEl.appendChild(printerNameEl);
-
-      const printerStatusEl = document.createElement('div');
-      printerStatusEl.innerHTML = this.viewModel.printer.statusName;
-      printerStatusEl.classList = 'bright small light';
-      if (this.config.useColors) {
-        const statusColor = this._getColorForPrinterStatusName(this.viewModel.printer.statusName);
-        if (statusColor) {
-          printerStatusEl.style.color = statusColor;
-        }
-      }
-      printerRowRightColumnEl.appendChild(printerStatusEl);
-
-      // Show temps only if the printer is online.
       if (this.viewModel.printer.isOnline) {
-        const tempsEl = document.createElement('div');
-        tempsEl.classList = 'small dimmed';
-        printerRowRightColumnEl.appendChild(tempsEl);
-
-        const hotbedSymbolEl = document.createElement('span');
-        hotbedSymbolEl.classList = 'symbol xsmall fa fa-object-group';
-        tempsEl.appendChild(hotbedSymbolEl);
-
-        const hotbedTempEl = document.createElement('span');
-        hotbedTempEl.innerHTML = `${this.viewModel.printer.hotbedTemp} °C`;
-        tempsEl.appendChild(hotbedTempEl);
-
-        const nozzleSymbolEl = document.createElement('span');
-        nozzleSymbolEl.classList = 'symbol symbol-second xsmall fa fa-get-pocket';
-        tempsEl.appendChild(nozzleSymbolEl);
-
-        const nozzleTempEl = document.createElement('span');
-        nozzleTempEl.innerHTML = `${this.viewModel.printer.nozzleTemp} °C`;
-        tempsEl.appendChild(nozzleTempEl);
+        this._writeDomForProjectRow(wrapper);
       }
 
-      // Project row.
-      const projectRowEl = document.createElement('div');
-      projectRowEl.classList = 'project-row';
-      wrapper.appendChild(projectRowEl);
-
-      const projectRowLeftColumnEl = document.createElement('div');
-      projectRowLeftColumnEl.classList = 'left-column';
-      projectRowEl.appendChild(projectRowLeftColumnEl);
-
-      const projectPhotoEl = document.createElement('img');
-      projectPhotoEl.src = this.viewModel.project.imageUrl;
-      projectPhotoEl.classList = 'photo';
-      projectRowLeftColumnEl.appendChild(projectPhotoEl);
-
-      const projectRowRightColumnEl = document.createElement('div');
-      projectRowRightColumnEl.classList = 'right-column';
-      projectRowEl.appendChild(projectRowRightColumnEl);
-
-      const projectNameEl = document.createElement('div');
-      projectNameEl.innerHTML = this.viewModel.project.name;
-      projectNameEl.classList = 'small light';
-      projectRowRightColumnEl.appendChild(projectNameEl);
-
-      const projectStatusEl = document.createElement('div');
-      projectStatusEl.innerHTML = this.viewModel.project.printStatusName;
-      projectStatusEl.classList = 'bright small light';
-      if (this.config.useColors) {
-        const statusColor = this._getColorForProjectStatus(this.viewModel.project.printStatusCode);
-        if (statusColor) {
-          projectStatusEl.style.color = statusColor;
-        }
-      }
-      projectRowRightColumnEl.appendChild(projectStatusEl);
-
-      // Show progress only if it is available.
-      if (this.viewModel.project.hasProgress) {
-        const projectProgressEl = document.createElement('div');
-        projectProgressEl.classList = 'small dimmed';
-        projectRowRightColumnEl.appendChild(projectProgressEl);
-
-        const clockSymbolEl = document.createElement('span');
-        clockSymbolEl.classList = 'symbol xsmall fa fa-clock-o';
-        projectProgressEl.appendChild(clockSymbolEl);
-
-        const projectRemainingTimeEl = document.createElement('span');
-        projectRemainingTimeEl.innerHTML = `${this.viewModel.project.remainingTime} mins`;
-        projectProgressEl.appendChild(projectRemainingTimeEl);
-
-        const progressSymbolEl = document.createElement('span');
-        progressSymbolEl.classList = 'symbol symbol-second xsmall fa fa-spinner';
-        projectProgressEl.appendChild(progressSymbolEl);
-
-        const projectProgressPercentEl = document.createElement('span');
-        const layerInfo = this.viewModel.currentLayer && this.viewModel.project.totalLayers
-          ? `(${this.viewModel.project.currentLayer}/${this.viewModel.project.totalLayers})`
-          : '';
-        projectProgressPercentEl.innerHTML = `${this.viewModel.project.progress}% ${layerInfo}`;
-        projectProgressEl.appendChild(projectProgressPercentEl);
-      }
-
-      // Timestamp row showing the last refresh time.
-      const timestampRowEl = document.createElement('div');
-      timestampRowEl.classList = 'timestamp-row dimmed xsmall';
-      projectRowRightColumnEl.appendChild(timestampRowEl);
-
-      const timestampIconEl = document.createElement('span');
-      timestampIconEl.classList = 'symbol fa fa-refresh';
-      timestampRowEl.appendChild(timestampIconEl);
-
-      const timestampEl = document.createTextNode(this.viewModel.timestamp);
-      timestampRowEl.appendChild(timestampEl);
+      this._writeDomForTimestampRow(wrapper);
     } else {
-      const loadingEl = this._getDomForLoading();
-      wrapper.appendChild(loadingEl);
+      this._writeDomForLoading(wrapper);
     }
 
     return wrapper;
   },
 
-  _getDomForLoading() {
+  _writeDomForLoading(wrapper) {
     const loadingEl = document.createElement('div');
     loadingEl.innerHTML = this.translate('LOADING');
     loadingEl.classList = 'dimmed small';
-    return loadingEl;
+    wrapper.appendChild(loadingEl);
+  },
+
+  _writeDomForPrinterRow(wrapper) {
+    const printerRowEl = document.createElement('div');
+    wrapper.appendChild(printerRowEl);
+
+    const printerRowLeftColumnEl = document.createElement('div');
+    printerRowLeftColumnEl.classList = 'left-column';
+    printerRowEl.appendChild(printerRowLeftColumnEl);
+
+    const photoEl = document.createElement('img');
+    photoEl.src = this.viewModel.printer.imageUrl;
+    photoEl.classList = 'photo printer-photo';
+    printerRowLeftColumnEl.appendChild(photoEl);
+
+    const printerRowRightColumnEl = document.createElement('div');
+    printerRowRightColumnEl.classList = 'right-column';
+    printerRowEl.appendChild(printerRowRightColumnEl);
+
+    const printerNameEl = document.createElement('div');
+    printerNameEl.innerHTML = this.viewModel.printer.name;
+    printerNameEl.classList = 'small';
+    printerRowRightColumnEl.appendChild(printerNameEl);
+
+    const printerStatusEl = document.createElement('div');
+    printerStatusEl.innerHTML = this.viewModel.printer.statusName;
+    printerStatusEl.classList = 'bright small light';
+    if (this.config.useColors) {
+      const statusColor = this._getColorForPrinterStatusName(this.viewModel.printer.statusName);
+      if (statusColor) {
+        printerStatusEl.style.color = statusColor;
+      }
+    }
+    printerRowRightColumnEl.appendChild(printerStatusEl);
+
+    // Show temps only if the printer is online.
+    if (this.viewModel.printer.isOnline) {
+      const tempsEl = document.createElement('div');
+      tempsEl.classList = 'small dimmed';
+      printerRowRightColumnEl.appendChild(tempsEl);
+
+      const hotbedSymbolEl = document.createElement('span');
+      hotbedSymbolEl.classList = 'symbol xsmall fa fa-object-group';
+      tempsEl.appendChild(hotbedSymbolEl);
+
+      const hotbedTempEl = document.createElement('span');
+      hotbedTempEl.innerHTML = `${this.viewModel.printer.hotbedTemp} °C`;
+      tempsEl.appendChild(hotbedTempEl);
+
+      const nozzleSymbolEl = document.createElement('span');
+      nozzleSymbolEl.classList = 'symbol symbol-second xsmall fa fa-get-pocket';
+      tempsEl.appendChild(nozzleSymbolEl);
+
+      const nozzleTempEl = document.createElement('span');
+      nozzleTempEl.innerHTML = `${this.viewModel.printer.nozzleTemp} °C`;
+      tempsEl.appendChild(nozzleTempEl);
+    }
+  },
+
+  _writeDomForProjectRow(wrapper) {
+    const projectRowEl = document.createElement('div');
+    projectRowEl.classList = 'project-row';
+    wrapper.appendChild(projectRowEl);
+
+    const projectRowLeftColumnEl = document.createElement('div');
+    projectRowLeftColumnEl.classList = 'left-column';
+    projectRowEl.appendChild(projectRowLeftColumnEl);
+
+    const projectPhotoEl = document.createElement('img');
+    projectPhotoEl.src = this.viewModel.project.imageUrl;
+    projectPhotoEl.classList = 'photo';
+    projectRowLeftColumnEl.appendChild(projectPhotoEl);
+
+    const projectRowRightColumnEl = document.createElement('div');
+    projectRowRightColumnEl.classList = 'right-column';
+    projectRowEl.appendChild(projectRowRightColumnEl);
+
+    const projectNameEl = document.createElement('div');
+    projectNameEl.innerHTML = this.viewModel.project.name;
+    projectNameEl.classList = 'small light';
+    projectRowRightColumnEl.appendChild(projectNameEl);
+
+    const projectStatusEl = document.createElement('div');
+    projectStatusEl.innerHTML = this.viewModel.project.printStatusName;
+    projectStatusEl.classList = 'bright small light';
+    if (this.config.useColors) {
+      const statusColor = this._getColorForProjectStatus(this.viewModel.project.printStatusCode);
+      if (statusColor) {
+        projectStatusEl.style.color = statusColor;
+      }
+    }
+    projectRowRightColumnEl.appendChild(projectStatusEl);
+
+    // Show progress only if it is available.
+    if (this.viewModel.project.hasProgress) {
+      const projectProgressEl = document.createElement('div');
+      projectProgressEl.classList = 'small dimmed';
+      projectRowRightColumnEl.appendChild(projectProgressEl);
+
+      const clockSymbolEl = document.createElement('span');
+      clockSymbolEl.classList = 'symbol xsmall fa fa-clock-o';
+      projectProgressEl.appendChild(clockSymbolEl);
+
+      const projectRemainingTimeEl = document.createElement('span');
+      projectRemainingTimeEl.innerHTML = `${this.viewModel.project.remainingTime} mins`;
+      projectProgressEl.appendChild(projectRemainingTimeEl);
+
+      const progressSymbolEl = document.createElement('span');
+      progressSymbolEl.classList = 'symbol symbol-second xsmall fa fa-spinner';
+      projectProgressEl.appendChild(progressSymbolEl);
+
+      const projectProgressPercentEl = document.createElement('span');
+      const layerInfo = this.viewModel.currentLayer && this.viewModel.project.totalLayers
+        ? `(${this.viewModel.project.currentLayer}/${this.viewModel.project.totalLayers})`
+        : '';
+      projectProgressPercentEl.innerHTML = `${this.viewModel.project.progress}% ${layerInfo}`;
+      projectProgressEl.appendChild(projectProgressPercentEl);
+    }
+  },
+
+  _writeDomForTimestampRow(wrapper) {
+    const timestampRowEl = document.createElement('div');
+    timestampRowEl.classList = 'timestamp-row dimmed xsmall';
+    wrapper.appendChild(timestampRowEl);
+
+    const timestampRowLeftColumnEl = document.createElement('div');
+    timestampRowLeftColumnEl.classList = 'left-column';
+    timestampRowEl.appendChild(timestampRowLeftColumnEl);
+
+    const timestampRowRightColumnEl = document.createElement('div');
+    timestampRowRightColumnEl.classList = 'right-column';
+    timestampRowEl.appendChild(timestampRowRightColumnEl);
+
+    const timestampIconEl = document.createElement('span');
+    timestampIconEl.classList = 'symbol fa fa-refresh';
+    timestampRowRightColumnEl.appendChild(timestampIconEl);
+
+    const timestampEl = document.createTextNode(this.viewModel.timestamp);
+    timestampRowRightColumnEl.appendChild(timestampEl);
   },
 
   socketNotificationReceived(notificationName, payload) {
