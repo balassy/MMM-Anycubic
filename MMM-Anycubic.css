@@ -7,7 +7,7 @@
 .MMM-Anycubic .left-column {
   display: inline-block;
   vertical-align: top;
-  width: 80px;
+  width: 75px;
 }
 
 .MMM-Anycubic .right-column {
@@ -17,8 +17,8 @@
 }
 
 .MMM-Anycubic .photo {
-  max-width: 80px;
-  max-height: 80px;
+  max-width: 75px;
+  max-height: 75px;
   display: block;
 
 }
