@@ -210,7 +210,7 @@ Module.register('MMM-Anycubic', {
       projectProgressEl.appendChild(progressSymbolEl);
 
       const projectProgressPercentEl = document.createElement('span');
-      const layerInfo = this.viewModel.currentLayer && this.viewModel.project.totalLayers
+      const layerInfo = this.viewModel.project.currentLayer && this.viewModel.project.totalLayers
         ? `(${this.viewModel.project.currentLayer}/${this.viewModel.project.totalLayers})`
         : '';
       projectProgressPercentEl.innerHTML = `${this.viewModel.project.progress}% ${layerInfo}`;
