@@ -293,7 +293,10 @@ Module.register('MMM-Anycubic', {
   },
 
   _getProjectPrintStatusName(value) {
-    return Object.keys(PROJECT_PRINT_STATUS).find((k) => PROJECT_PRINT_STATUS[k] === value);
+    const statusName = Object.keys(PROJECT_PRINT_STATUS).find((k) => PROJECT_PRINT_STATUS[k] === value);
+    return statusName
+      ? this._capitalizeFirstLetter(statusName)
+      : `Unknown (${value})`;
   },
 
   _formatTimestamp(timestamp) {
