@@ -13,7 +13,8 @@ const PROJECT_PRINT_STATUS = {
   Checking: 5,
   Heating: 6,
   Slicing: 7,
-  AutoLeveling: 9
+  AutoLeveling: 9,
+  DetectingForeignObjects: 13
 };
 
 const PRINTER_DEVICE_STATUS = {
