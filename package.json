@@ -1,6 +1,6 @@
 {
   "name": "mmm-anycubic",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "MagicMirror module to display the status of an Anycubic 3D printer through their cloud service.",
   "main": "MMM-Anycubic.js",
   "author": "György Balássy",

@@ -3,6 +3,11 @@
 All notable changes to this project is documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.5.0]
+
+- Added detecting foreign object project status.
+- Added friendly project status code display when the status name is unknown.
+
 ## [1.4.1]
 
 - Fixed current and total layer number display. 
