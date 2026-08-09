@@ -61,15 +61,30 @@ module.exports = NodeHelper.create({
     };
 
     request(options, (error, response, body) => {
-      if (!error && response.statusCode === 200) {
-        self._processResponse(moduleId, body, notificationName);
+      if (!error && response && response.statusCode === 200) {
+        self._processSuccessfulResponse(moduleId, body, notificationName);
       } else {
-        console.error(`MMM-Anycubic Node helper: Failed to load data in the background. Error: ${error}. Status code: ${response.statusCode}. Body: ${body}`); // eslint-disable-line no-console
+        self._processFailedResponse(moduleId, error, response, body, notificationName);
       }
     });
   },
 
-  _processResponse(moduleId, responseBody, notificationName) {
+  _processFailedResponse(moduleId, error, response, body, notificationName) {
+    console.error(`MMM-Anycubic Node helper: Failed to load data in the background. Error: ${error}. Status code: ${response ? response.statusCode : 'N/A'}. Body: ${body}`); // eslint-disable-line no-console
+
+    const payload = {
+      // eslint-disable-next-line object-shorthand -- Property shorthand may not be supported in older Node versions.
+      moduleId: moduleId,
+      data: null,
+      error: {
+        code: 'REQUEST_FAILED',
+        message: error || 'Unknown error occurred while retrieving data from the Anycubic Cloud API.'
+      }
+    };
+    this.sendSocketNotification(notificationName, payload);
+  },
+
+  _processSuccessfulResponse(moduleId, responseBody, notificationName) {
     const response = JSON.parse(responseBody);
 
     const payload = {
