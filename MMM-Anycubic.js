@@ -265,7 +265,9 @@ Module.register('MMM-Anycubic', {
   },
 
   _processFailedResponseJson(response) {
-    Log.error(this.name, `MMM-Anycubic: Failed to load data in the background. Error: ${response.error.code} - ${response.error.message}`);
+    const rawErrorCode = response && response.error ? response.error.code : 'UNKNOWN_ERROR';
+    const rawErrorMessage = response && response.error ? JSON.stringify(response.error.message) : 'Unknown error occurred while retrieving data from the Anycubic Cloud API.';
+    Log.error(this.name, `MMM-Anycubic: Failed to load data in the background. Error: ${rawErrorCode} - ${rawErrorMessage}`);
 
     let errorMessage = response.error.message || 'Unknown error occurred while retrieving data from the Anycubic Cloud API.';
     switch (response.error.code) {
@@ -273,6 +275,7 @@ Module.register('MMM-Anycubic', {
         errorMessage = this.translate('LOGIN_FAILED');
         break;
       default:
+        errorMessage = this.translate(response.error.code);
         break;
     }
 
