@@ -1,3 +1,4 @@
 {
-  "LOADING": "Nyomtató lekérdezése..."
+  "LOADING": "Nyomtató lekérdezése...",
+  "LOGIN_FAILED": "Sikertelen bejelentkezés. Frissítsd az authToken-t a konfigurációban."
 }

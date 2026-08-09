@@ -62,7 +62,8 @@ Module.register('MMM-Anycubic', {
     const self = this;
     self.viewModel = {
       printer: {},
-      project: {}
+      project: {},
+      error: null
     };
     self.hasData = false;
 
@@ -79,7 +80,9 @@ Module.register('MMM-Anycubic', {
   getDom() {
     const wrapper = document.createElement('div');
 
-    if (this.viewModel.printer.name && this.viewModel.project.name) {
+    if (this.viewModel.error) {
+      this._writeDomForError(wrapper);
+    } else if (this.viewModel.printer.name && this.viewModel.project.name) {
       this._writeDomForPrinterRow(wrapper);
 
       if (this.viewModel.printer.isOnline) {
@@ -92,6 +95,13 @@ Module.register('MMM-Anycubic', {
     }
 
     return wrapper;
+  },
+
+  _writeDomForError(wrapper) {
+    const errorEl = document.createElement('div');
+    errorEl.innerHTML = this.viewModel.error.message;
+    errorEl.classList = 'dimmed small';
+    wrapper.appendChild(errorEl);
   },
 
   _writeDomForLoading(wrapper) {
@@ -244,13 +254,37 @@ Module.register('MMM-Anycubic', {
     if (notificationName === 'MMM-ANYCUBIC.STARTED') {
       this.updateDom();
     } else if ((notificationName === 'MMM-ANYCUBIC.PRINTER_VALUE_RECEIVED' || notificationName === 'MMM-ANYCUBIC.PROJECT_VALUE_RECEIVED') && payload.moduleId === this.identifier) {
+      if (payload.error) {
+        this._processFailedResponseJson(payload);
+      } else {
+        this._processSuccessfulResponseJson(payload.data, notificationName);
+      }
       this.hasData = true;
-      this._processResponseJson(payload.data, notificationName);
       this.updateDom();
     }
   },
 
-  _processResponseJson(response, notificationName) {
+  _processFailedResponseJson(response) {
+    Log.error(this.name, `MMM-Anycubic: Failed to load data in the background. Error: ${response.error.code} - ${response.error.message}`);
+
+    let errorMessage = response.error.message || 'Unknown error occurred while retrieving data from the Anycubic Cloud API.';
+    switch (response.error.code) {
+      case 10001:
+        errorMessage = this.translate('LOGIN_FAILED');
+        break;
+      default:
+        break;
+    }
+
+    this.viewModel.error = {
+      code: response.error.code,
+      message: errorMessage
+    };
+  },
+
+  _processSuccessfulResponseJson(response, notificationName) {
+    this.viewModel.error = null;
+
     if (notificationName === 'MMM-ANYCUBIC.PRINTER_VALUE_RECEIVED') {
       this.viewModel.printer = {
         name: response.name,

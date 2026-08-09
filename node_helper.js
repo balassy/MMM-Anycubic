@@ -71,12 +71,24 @@ module.exports = NodeHelper.create({
 
   _processResponse(moduleId, responseBody, notificationName) {
     const response = JSON.parse(responseBody);
-    const payload = {
 
+    const payload = {
       // eslint-disable-next-line object-shorthand -- Property shorthand may not be supported in older Node versions.
       moduleId: moduleId,
-      data: response.data[0]
+      data: null,
+      error: null
     };
+
+    if (!response || !response.data || !Array.isArray(response.data) || response.data.length === 0) {
+      console.error(`MMM-Anycubic Node helper: Could not successfully retrieve data from the Anycubic Cloud API! Raw response: ${responseBody}`); // eslint-disable-line no-console
+      payload.error = {
+        code: response.code || 'UNKNOWN_ERROR',
+        message: response.msg || 'Unknown error occurred while retrieving data from the Anycubic Cloud API.'
+      };
+    } else {
+      payload.data = response.data[0]; // eslint-disable-line prefer-destructuring -- Destructuring may not be supported in older Node versions.
+    }
+
     this.sendSocketNotification(notificationName, payload);
   },
 

@@ -1,3 +1,4 @@
 {
-  "LOADING": "Loading printer status..."
+  "LOADING": "Loading printer status...",
+  "LOGIN_FAILED": "Login failed. Please update your authToken in the config."
 }
