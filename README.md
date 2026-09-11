@@ -4,7 +4,7 @@ This is a module for the [MagicMirror²](https://github.com/MichMich/MagicMirror
 
 ## Features
 
-This module displays the status and temperatures of the logged-in user's first printer, and the last (or current) print jobs status, progress and remaining time. (Yes, I know it's limited and not configurable at the moment.)
+This module displays the status and temperatures of the logged-in user's printers, and the last (or current) print jobs status, progress and remaining time.
 
 > **IMPORTANT!** The REST API of Anycubic Cloud is not documented and not opened to 3rd-party applications. This module mimics some functionality of the webpage and the client applications, but it can break any time.
 
@@ -44,7 +44,8 @@ var config = {
         authToken: 'TODO_ADD_YOUR_AUTHENTICATION_TOKEN',
         updateInterval: 15000,
         useColors: true,
-        truncateProjectNameAfterChars: 0
+        truncateProjectNameAfterChars: 0,
+        machineName: null
       }
     }
   ]
@@ -67,6 +68,7 @@ This is required because newer versions of MagicMirror do not include this modul
 | `updateInterval`                | *Optional* The frequency of when the module should query the status from the Anycubic Cloud service. <br><br>**Type:** `int` (milliseconds) <br>**Default value:** `15000` milliseconds (15 seconds)
 | `useColors`                     | *Optional* When set to true the printer and project statuses will be displayed with colors. <br><br> **Type:** `boolean` <br>**Default value:** `true`
 | `truncateProjectNameAfterChars` | *Optional* When set to a non-zero number the name of the currently printed project will be truncated at the given character length. <br><br> **Type:** `number` <br>**Default value:** `0`
+| `printerName`                   | *Optional* When set only the printer with the given name will be displayed, with its project. Useful when the module is added multiple times to MagicMirror. <br><br> **Type:** `string` <br>**Default value:** `null`
 
 ## How to obtain the `authToken`
 

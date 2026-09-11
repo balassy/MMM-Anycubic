@@ -33,7 +33,8 @@ Module.register('MMM-Anycubic', {
     authToken: 'TODO_TOKEN',
     updateInterval: 5000,
     useColors: true,
-    truncateProjectNameAfterChars: 0
+    truncateProjectNameAfterChars: 0,
+    printerName: null
   },
 
   requiresVersion: '2.1.0',

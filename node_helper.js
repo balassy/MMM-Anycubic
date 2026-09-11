@@ -48,7 +48,7 @@ module.exports = NodeHelper.create({
 
   _sendRequests(moduleId, config) {
     this._getData(API_URLS.GET_PRINTERS, moduleId, config, 'MMM-ANYCUBIC.PRINTER_VALUE_RECEIVED');
-    this._getData(`${API_URLS.GET_PROJECTS}?limit=1`, moduleId, config, 'MMM-ANYCUBIC.PROJECT_VALUE_RECEIVED');
+    this._getData(`${API_URLS.GET_PROJECTS}?limit=20`, moduleId, config, 'MMM-ANYCUBIC.PROJECT_VALUE_RECEIVED');
   },
 
   _getData(url, moduleId, config, notificationName) {
@@ -62,7 +62,7 @@ module.exports = NodeHelper.create({
 
     request(options, (error, response, body) => {
       if (!error && response && response.statusCode === 200) {
-        self._processSuccessfulResponse(moduleId, body, notificationName);
+        self._processSuccessfulResponse(moduleId, body, notificationName, config.printerName);
       } else {
         self._processFailedResponse(moduleId, error, response, body, notificationName);
       }
@@ -84,7 +84,7 @@ module.exports = NodeHelper.create({
     this.sendSocketNotification(notificationName, payload);
   },
 
-  _processSuccessfulResponse(moduleId, responseBody, notificationName) {
+  _processSuccessfulResponse(moduleId, responseBody, notificationName, printerName) {
     const response = JSON.parse(responseBody);
 
     const payload = {
@@ -101,7 +101,17 @@ module.exports = NodeHelper.create({
         message: response.msg || 'Unknown error occurred while retrieving data from the Anycubic Cloud API.'
       };
     } else {
-      payload.data = response.data[0]; // eslint-disable-line prefer-destructuring -- Destructuring may not be supported in older Node versions.
+      if(printerName) {
+        if(notificationName === 'MMM-ANYCUBIC.PRINTER_VALUE_RECEIVED') {
+          payload.data = response.data.filter(printer => printer.machine_data.name === printerName)[0]; // eslint-disable-line prefer-destructuring -- Destructuring may not be supported in older Node versions.
+        }
+
+        if(notificationName === 'MMM-ANYCUBIC.PROJECT_VALUE_RECEIVED') {
+          payload.data = response.data.filter(project => project.printer_name === printerName)[0]; // eslint-disable-line prefer-destructuring -- Destructuring may not be supported in older Node versions.
+        }
+      } else {
+        payload.data = response.data[0]; // eslint-disable-line prefer-destructuring -- Destructuring may not be supported in older Node versions.
+      }
     }
 
     this.sendSocketNotification(notificationName, payload);
