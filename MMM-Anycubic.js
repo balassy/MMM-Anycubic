@@ -32,7 +32,8 @@ Module.register('MMM-Anycubic', {
   defaults: {
     authToken: 'TODO_TOKEN',
     updateInterval: 5000,
-    useColors: true
+    useColors: true,
+    truncateProjectNameAfterChars: 0
   },
 
   requiresVersion: '2.1.0',
@@ -191,8 +192,10 @@ Module.register('MMM-Anycubic', {
     projectRowEl.appendChild(projectRowRightColumnEl);
 
     const projectNameEl = document.createElement('div');
-    projectNameEl.innerHTML = this.viewModel.project.name;
     projectNameEl.classList = 'small light';
+    projectNameEl.innerHTML = this.config.truncateProjectNameAfterChars
+      ? this.viewModel.project.name.substring(0, this.config.truncateProjectNameAfterChars) + '...'
+      : this.viewModel.project.name;
     projectRowRightColumnEl.appendChild(projectNameEl);
 
     const projectStatusEl = document.createElement('div');
