@@ -150,21 +150,25 @@ Module.register('MMM-Anycubic', {
       tempsEl.classList = 'small dimmed';
       printerRowRightColumnEl.appendChild(tempsEl);
 
-      const hotbedSymbolEl = document.createElement('span');
-      hotbedSymbolEl.classList = 'symbol xsmall fa fa-object-group';
-      tempsEl.appendChild(hotbedSymbolEl);
+      if (this.viewModel.printer.hotbedTemp !== null) {
+        const hotbedSymbolEl = document.createElement('span');
+        hotbedSymbolEl.classList = 'symbol xsmall fa fa-object-group';
+        tempsEl.appendChild(hotbedSymbolEl);
 
-      const hotbedTempEl = document.createElement('span');
-      hotbedTempEl.innerHTML = `${this.viewModel.printer.hotbedTemp} °C`;
-      tempsEl.appendChild(hotbedTempEl);
+        const hotbedTempEl = document.createElement('span');
+        hotbedTempEl.innerHTML = `${this.viewModel.printer.hotbedTemp} °C`;
+        tempsEl.appendChild(hotbedTempEl);
+      }
 
-      const nozzleSymbolEl = document.createElement('span');
-      nozzleSymbolEl.classList = 'symbol symbol-second xsmall fa fa-get-pocket';
-      tempsEl.appendChild(nozzleSymbolEl);
+      if (this.viewModel.printer.nozzleTemp !== null) {
+        const nozzleSymbolEl = document.createElement('span');
+        nozzleSymbolEl.classList = 'symbol symbol-second xsmall fa fa-get-pocket';
+        tempsEl.appendChild(nozzleSymbolEl);
 
-      const nozzleTempEl = document.createElement('span');
-      nozzleTempEl.innerHTML = `${this.viewModel.printer.nozzleTemp} °C`;
-      tempsEl.appendChild(nozzleTempEl);
+        const nozzleTempEl = document.createElement('span');
+        nozzleTempEl.innerHTML = `${this.viewModel.printer.nozzleTemp} °C`;
+        tempsEl.appendChild(nozzleTempEl);
+      }
     }
   },
 
@@ -294,8 +298,8 @@ Module.register('MMM-Anycubic', {
         imageUrl: response.img,
         statusCode: response.device_status,
         statusName: this._capitalizeFirstLetter(response.reason),
-        hotbedTemp: response.parameter.curr_hotbed_temp,
-        nozzleTemp: response.parameter.curr_nozzle_temp,
+        hotbedTemp: response.parameter ? response.parameter.curr_hotbed_temp : null,
+        nozzleTemp: response.parameter ? response.parameter.curr_nozzle_temp : null,
         isOnline: response.device_status !== PRINTER_DEVICE_STATUS.Offline
       };
     }
